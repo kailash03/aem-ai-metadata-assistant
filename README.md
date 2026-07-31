@@ -16,6 +16,8 @@ When new assets are uploaded, authors may need to manually create:
 
 Doing this consistently at scale can become time-consuming.
 
+OPENAI_API_KEY=your_key_here
+
 ## The Idea
 
 The AEM AI Metadata Assistant explores how AI can analyze an asset and suggest metadata while keeping the AEM author in control.
