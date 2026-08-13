@@ -5,6 +5,8 @@ const multer = require("multer");
 const OpenAI = require("openai");
 require("dotenv").config();
 
+const { buildAemMetadata } = require("./services/aemService");
+
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -144,14 +146,20 @@ app.post("/api/approve", (req, res) => {
       JSON.stringify(approvals, null, 2)
     );
 
+    const aemMetadata = buildAemMetadata(record.metadata);
+
+    console.log("AEM METADATA PAYLOAD:");
+    console.log(aemMetadata);
+
     console.log("APPROVED METADATA SAVED:");
     console.log(record);
 
     res.status(201).json({
-      success: true,
-      message: "Metadata approved and saved successfully.",
-      approval: record
-    });
+    success: true,
+    message: "Metadata approved and saved successfully.",
+    approval: record,
+    aemMetadata: aemMetadata
+  });
 
   } catch (error) {
     console.error(
