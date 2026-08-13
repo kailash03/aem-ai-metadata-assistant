@@ -236,15 +236,21 @@ approveButton.addEventListener(
         await response.json();
 
 
-      if (!response.ok) {
+     if (!response.ok) {
 
-        throw new Error(
-          data.message ||
-          data.error ||
-          "Approval failed"
-        );
+  const validationErrors =
+    Array.isArray(data.errors)
+      ? data.errors.join(" ")
+      : "";
 
-      }
+  throw new Error(
+    validationErrors ||
+    data.message ||
+    data.error ||
+    "Approval failed"
+  );
+
+}
 
 
       showStatus(

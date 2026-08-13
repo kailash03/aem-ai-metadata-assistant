@@ -47,7 +47,40 @@ async function sendMetadataToAem(assetPath, metadata) {
   );
 }
 
+function validateMetadata(metadata) {
+  const errors = [];
+
+  if (!metadata.title?.trim()) {
+    errors.push("Title is required.");
+  }
+
+  if (!metadata.description?.trim()) {
+    errors.push("Description is required.");
+  }
+
+  if (!metadata.altText?.trim()) {
+    errors.push("Alt text is required for accessibility.");
+  }
+
+  if (
+    !Array.isArray(metadata.tags) ||
+    metadata.tags.length === 0
+  ) {
+    errors.push("At least one tag is required.");
+  }
+
+  if (!metadata.classification?.trim()) {
+    errors.push("Classification is required.");
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors
+  };
+}
+
 module.exports = {
   buildAemMetadata,
-  sendMetadataToAem
+  sendMetadataToAem,
+  validateMetadata
 };

@@ -7,7 +7,8 @@ require("dotenv").config();
 
 const {
   buildAemMetadata,
-  sendMetadataToAem
+  sendMetadataToAem,
+  validateMetadata
 } = require("./services/aemService");
 
 const app = express();
@@ -45,20 +46,20 @@ app.post("/api/analyze", upload.single("image"), async (req, res) => {
             {
               type: "input_text",
               text: `
-Analyze this image as if it were an asset uploaded to Adobe Experience Manager Assets.
+  Analyze this image as if it were an asset uploaded to Adobe Experience Manager Assets.
 
-Return ONLY valid JSON in this format:
+  Return ONLY valid JSON in this format:
 
-{
-  "title": "short professional asset title",
-  "description": "1-2 sentence asset description",
-  "altText": "concise accessible alt text",
-  "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
-  "classification": "asset category",
-  "confidence": 0.95
-}
+  {
+    "title": "short professional asset title",
+    "description": "1-2 sentence asset description",
+    "altText": "concise accessible alt text",
+    "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+    "classification": "asset category",
+    "confidence": 0.95
+  }
 
-Do not include markdown or additional explanation.
+  Do not include markdown or additional explanation.
               `,
             },
             {
@@ -102,6 +103,17 @@ Do not include markdown or additional explanation.
 app.post("/api/approve", async (req, res) => {
   try {
     const approvedMetadata = req.body;
+
+    const validation =
+  validateMetadata(approvedMetadata);
+
+if (!validation.valid) {
+  return res.status(400).json({
+    success: false,
+    message: "Metadata validation failed.",
+    errors: validation.errors
+  });
+}
 
     const record = {
       id: `approval-${Date.now()}`,
