@@ -421,6 +421,87 @@ footer {
   margin: 25px;
 }
 
+/* AEM SYNC RESULT */
+
+.aem-sync-result {
+  display: none;
+
+  margin-top: 18px;
+  padding: 16px;
+
+  background: #eef8f1;
+
+  border: 1px solid #c9e8d3;
+  border-radius: 8px;
+}
+
+.aem-sync-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  color: #18733c;
+}
+
+.aem-sync-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+
+  background: #198754;
+  color: white;
+
+  border-radius: 50%;
+
+  font-weight: bold;
+}
+
+#aemSyncStatus {
+  margin-top: 3px;
+
+  font-size: 13px;
+
+  color: #4f6f5b;
+}
+
+.aem-path {
+  margin-top: 14px;
+  padding-top: 12px;
+
+  border-top: 1px solid #d4e8da;
+}
+
+.aem-path span {
+  display: block;
+
+  margin-bottom: 6px;
+
+  font-size: 11px;
+  font-weight: bold;
+
+  color: #777;
+
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.aem-path code {
+  display: block;
+
+  padding: 9px 10px;
+
+  background: white;
+
+  border-radius: 5px;
+
+  font-size: 12px;
+
+  overflow-wrap: anywhere;
+}
+
 
 /* MOBILE */
 

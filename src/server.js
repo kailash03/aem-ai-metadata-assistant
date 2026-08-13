@@ -5,7 +5,10 @@ const multer = require("multer");
 const OpenAI = require("openai");
 require("dotenv").config();
 
-const { buildAemMetadata } = require("./services/aemService");
+const {
+  buildAemMetadata,
+  sendMetadataToAem
+} = require("./services/aemService");
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -96,7 +99,7 @@ Do not include markdown or additional explanation.
   }
 });
 
-app.post("/api/approve", (req, res) => {
+app.post("/api/approve", async (req, res) => {
   try {
     const approvedMetadata = req.body;
 
@@ -151,14 +154,23 @@ app.post("/api/approve", (req, res) => {
     console.log("AEM METADATA PAYLOAD:");
     console.log(aemMetadata);
 
+    const assetPath =
+  `/content/dam/ai-metadata-assistant/${record.fileName}`;
+
+  const aemResult = await sendMetadataToAem(
+    assetPath,
+    aemMetadata
+  );
+
     console.log("APPROVED METADATA SAVED:");
     console.log(record);
 
     res.status(201).json({
     success: true,
-    message: "Metadata approved and saved successfully.",
+    message: "Metadata approved and processed successfully.",
     approval: record,
-    aemMetadata: aemMetadata
+    aemMetadata: aemMetadata,
+    aemResult: aemResult
   });
 
   } catch (error) {

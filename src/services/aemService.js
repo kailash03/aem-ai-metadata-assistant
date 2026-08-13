@@ -22,6 +22,32 @@ function buildAemMetadata(metadata) {
   };
 }
 
+async function sendMetadataToAem(assetPath, metadata) {
+  const mockMode = process.env.AEM_MOCK_MODE !== "false";
+
+  if (mockMode) {
+    console.log("=================================");
+    console.log("AEM MOCK MODE");
+    console.log("Asset Path:", assetPath);
+    console.log("Metadata that would be sent to AEM:");
+    console.log(metadata);
+    console.log("=================================");
+
+    return {
+      success: true,
+      mode: "mock",
+      assetPath,
+      message: "Metadata successfully simulated for AEM."
+    };
+  }
+
+  // Real AEM integration will be implemented next.
+  throw new Error(
+    "Real AEM integration is not configured yet."
+  );
+}
+
 module.exports = {
-  buildAemMetadata
+  buildAemMetadata,
+  sendMetadataToAem
 };

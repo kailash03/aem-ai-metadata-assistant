@@ -25,6 +25,15 @@ const emptyState =
 const status =
   document.getElementById("status");
 
+const aemSyncResult =
+  document.getElementById("aemSyncResult");
+
+const aemSyncStatus =
+  document.getElementById("aemSyncStatus");
+
+const aemAssetPath =
+  document.getElementById("aemAssetPath");
+
 
 /*
  * IMAGE SELECTION
@@ -51,6 +60,14 @@ imageInput.addEventListener(
       file.name;
 
     clearMetadata();
+
+    metadataSection.style.display =
+      "none";
+
+    emptyState.style.display =
+      "block";
+
+    resetAemSync();
 
     clearStatus();
 
@@ -79,11 +96,13 @@ analyzeButton.addEventListener(
       return;
     }
 
+
     analyzeButton.disabled =
       true;
 
     analyzeButton.textContent =
       "Analyzing...";
+
 
     showStatus(
       "AI is analyzing the asset...",
@@ -137,6 +156,12 @@ analyzeButton.addEventListener(
 
       metadataSection.style.display =
         "block";
+
+
+      approveButton.textContent =
+        "✓ Approve Metadata";
+
+      resetAemSync();
 
 
       showStatus(
@@ -232,6 +257,28 @@ approveButton.addEventListener(
         "✓ Approved";
 
 
+      /*
+       * DISPLAY AEM SYNC RESULT
+       */
+
+      if (data.aemResult?.success) {
+
+        aemSyncResult.style.display =
+          "block";
+
+
+        aemSyncStatus.textContent =
+          data.aemResult.mode === "mock"
+            ? "Simulated successfully (Mock Mode)"
+            : "Synced successfully";
+
+
+        aemAssetPath.textContent =
+          data.aemResult.assetPath || "--";
+
+      }
+
+
     } catch (error) {
 
       showStatus(
@@ -264,12 +311,16 @@ resetButton.addEventListener(
   "click",
   () => {
 
-    imageInput.value = "";
+    imageInput.value =
+      "";
 
-    preview.src = "";
+
+    preview.src =
+      "";
 
     preview.style.display =
       "none";
+
 
     fileName.textContent =
       "Select an image to begin";
@@ -281,12 +332,16 @@ resetButton.addEventListener(
     metadataSection.style.display =
       "none";
 
+
     emptyState.style.display =
       "block";
 
 
     approveButton.textContent =
       "✓ Approve Metadata";
+
+
+    resetAemSync();
 
 
     clearStatus();
@@ -358,11 +413,13 @@ function getMetadataFromForm() {
     fileName:
       imageInput.files[0]?.name || "",
 
+
     title:
       document
         .getElementById("title")
         .value
         .trim(),
+
 
     description:
       document
@@ -370,25 +427,31 @@ function getMetadataFromForm() {
         .value
         .trim(),
 
+
     altText:
       document
         .getElementById("altText")
         .value
         .trim(),
 
+
     tags:
       document
         .getElementById("tags")
         .value
         .split(",")
-        .map(tag => tag.trim())
+        .map(
+          tag => tag.trim()
+        )
         .filter(Boolean),
+
 
     classification:
       document
         .getElementById("classification")
         .value
         .trim(),
+
 
     confidence:
       document
@@ -410,25 +473,55 @@ function clearMetadata() {
     .getElementById("title")
     .value = "";
 
+
   document
     .getElementById("description")
     .value = "";
+
 
   document
     .getElementById("altText")
     .value = "";
 
+
   document
     .getElementById("tags")
     .value = "";
+
 
   document
     .getElementById("classification")
     .value = "";
 
+
   document
     .getElementById("confidence")
     .textContent = "--";
+
+}
+
+
+/*
+ * RESET AEM SYNC
+ */
+
+function resetAemSync() {
+
+  if (!aemSyncResult) {
+    return;
+  }
+
+
+  aemSyncResult.style.display =
+    "none";
+
+
+  aemSyncStatus.textContent =
+    "Waiting for approval";
+
+
+  aemAssetPath.textContent =
+    "--";
 
 }
 
@@ -445,16 +538,24 @@ function showStatus(
   status.textContent =
     message;
 
+
   status.className =
     "status-" + type;
 
 }
 
 
+/*
+ * CLEAR STATUS
+ */
+
 function clearStatus() {
 
-  status.textContent = "";
+  status.textContent =
+    "";
 
-  status.className = "";
+
+  status.className =
+    "";
 
 }
