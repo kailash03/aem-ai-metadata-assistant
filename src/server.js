@@ -1,3 +1,5 @@
+const fs = require("fs");
+const path = require("path");
 const express = require("express");
 const multer = require("multer");
 const OpenAI = require("openai");
@@ -11,6 +13,7 @@ const openai = new OpenAI({
 });
 
 app.use(express.json());
+app.use(express.static("public"));
 
 app.get("/", (req, res) => {
   res.json({
@@ -87,6 +90,78 @@ Do not include markdown or additional explanation.
     res.status(500).json({
       error: "Unable to analyze image",
       details: error.message,
+    });
+  }
+});
+
+app.post("/api/approve", (req, res) => {
+  try {
+    const approvedMetadata = req.body;
+
+    const record = {
+      id: `approval-${Date.now()}`,
+      fileName: approvedMetadata.fileName,
+      status: "APPROVED",
+      approvedAt: new Date().toISOString(),
+
+      metadata: {
+        title: approvedMetadata.title,
+        description: approvedMetadata.description,
+        altText: approvedMetadata.altText,
+        tags: approvedMetadata.tags,
+        classification: approvedMetadata.classification,
+        confidence: approvedMetadata.confidence
+      }
+    };
+
+    const dataDirectory = path.join(__dirname, "../data");
+    const dataFile = path.join(
+      dataDirectory,
+      "approved-metadata.json"
+    );
+
+    if (!fs.existsSync(dataDirectory)) {
+      fs.mkdirSync(dataDirectory, {
+        recursive: true
+      });
+    }
+
+    let approvals = [];
+
+    if (fs.existsSync(dataFile)) {
+      const existingData =
+        fs.readFileSync(dataFile, "utf8");
+
+      if (existingData.trim()) {
+        approvals = JSON.parse(existingData);
+      }
+    }
+
+    approvals.push(record);
+
+    fs.writeFileSync(
+      dataFile,
+      JSON.stringify(approvals, null, 2)
+    );
+
+    console.log("APPROVED METADATA SAVED:");
+    console.log(record);
+
+    res.status(201).json({
+      success: true,
+      message: "Metadata approved and saved successfully.",
+      approval: record
+    });
+
+  } catch (error) {
+    console.error(
+      "Approval error:",
+      error
+    );
+
+    res.status(500).json({
+      success: false,
+      error: "Unable to save approved metadata."
     });
   }
 });
