@@ -8,7 +8,8 @@ require("dotenv").config();
 const {
   buildAemMetadata,
   sendMetadataToAem,
-  validateMetadata
+  validateMetadata,
+  evaluateConfidence
 } = require("./services/aemService");
 
 const app = express();
@@ -75,29 +76,34 @@ app.post("/api/analyze", upload.single("image"), async (req, res) => {
 
     let metadata;
 
-    try {
-      metadata = JSON.parse(rawResult);
-    } catch {
-      return res.status(502).json({
-        error: "AI returned invalid JSON",
-        rawResult,
-      });
-    }
+try {
+  metadata = JSON.parse(rawResult);
+} catch {
+  return res.status(502).json({
+    error: "AI returned invalid JSON",
+    rawResult,
+  });
+}
 
-    res.json({
-      fileName: req.file.originalname,
-      mimeType: req.file.mimetype,
-      size: req.file.size,
-      metadata,
-    });
-  } catch (error) {
-    console.error(error);
+const confidenceEvaluation =
+  evaluateConfidence(metadata.confidence);
 
-    res.status(500).json({
-      error: "Unable to analyze image",
-      details: error.message,
-    });
-  }
+res.json({
+  fileName: req.file.originalname,
+  mimeType: req.file.mimetype,
+  size: req.file.size,
+  metadata,
+  confidenceEvaluation,
+});
+
+} catch (error) {
+  console.error(error);
+
+  res.status(500).json({
+    error: "Unable to analyze image",
+    details: error.message,
+  });
+}
 });
 
 app.post("/api/approve", async (req, res) => {

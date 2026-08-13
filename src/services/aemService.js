@@ -79,8 +79,29 @@ function validateMetadata(metadata) {
   };
 }
 
+function evaluateConfidence(confidence) {
+  const threshold =
+    Number(process.env.AI_CONFIDENCE_THRESHOLD || 0.80);
+
+  let score =
+    typeof confidence === "string"
+      ? Number(confidence.replace("%", "")) / 100
+      : Number(confidence);
+
+  if (!Number.isFinite(score)) {
+    score = 0;
+  }
+
+  return {
+    score,
+    threshold,
+    lowConfidence: score < threshold
+  };
+}
+
 module.exports = {
   buildAemMetadata,
   sendMetadataToAem,
-  validateMetadata
+  validateMetadata,
+  evaluateConfidence
 };

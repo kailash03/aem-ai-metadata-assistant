@@ -34,6 +34,12 @@ const aemSyncStatus =
 const aemAssetPath =
   document.getElementById("aemAssetPath");
 
+const confidenceWarning =
+  document.getElementById("confidenceWarning");
+
+const confidenceWarningText =
+  document.getElementById("confidenceWarningText");
+
 
 /*
  * IMAGE SELECTION
@@ -69,6 +75,8 @@ imageInput.addEventListener(
 
     resetAemSync();
 
+    resetConfidenceWarning();
+
     clearStatus();
 
   }
@@ -96,19 +104,19 @@ analyzeButton.addEventListener(
       return;
     }
 
-
     analyzeButton.disabled =
       true;
 
     analyzeButton.textContent =
       "Analyzing...";
 
-
     showStatus(
       "AI is analyzing the asset...",
       "info"
     );
 
+    resetConfidenceWarning();
+    resetAemSync();
 
     const formData =
       new FormData();
@@ -117,7 +125,6 @@ analyzeButton.addEventListener(
       "image",
       file
     );
-
 
     try {
 
@@ -130,10 +137,8 @@ analyzeButton.addEventListener(
           }
         );
 
-
       const data =
         await response.json();
-
 
       if (!response.ok) {
 
@@ -145,11 +150,17 @@ analyzeButton.addEventListener(
 
       }
 
-
       populateMetadata(
         data.metadata
       );
 
+      /*
+       * CHECK AI CONFIDENCE
+       */
+
+      updateConfidenceWarning(
+        data.confidenceEvaluation
+      );
 
       emptyState.style.display =
         "none";
@@ -157,18 +168,13 @@ analyzeButton.addEventListener(
       metadataSection.style.display =
         "block";
 
-
       approveButton.textContent =
         "✓ Approve Metadata";
-
-      resetAemSync();
-
 
       showStatus(
         "✓ AI suggestions generated. Review before approval.",
         "success"
       );
-
 
     } catch (error) {
 
@@ -203,13 +209,11 @@ approveButton.addEventListener(
     const approvedMetadata =
       getMetadataFromForm();
 
-
     approveButton.disabled =
       true;
 
     approveButton.textContent =
       "Approving...";
-
 
     try {
 
@@ -231,33 +235,33 @@ approveButton.addEventListener(
           }
         );
 
-
       const data =
         await response.json();
 
+      /*
+       * HANDLE VALIDATION / API ERRORS
+       */
 
-     if (!response.ok) {
+      if (!response.ok) {
 
-  const validationErrors =
-    Array.isArray(data.errors)
-      ? data.errors.join(" ")
-      : "";
+        const validationErrors =
+          Array.isArray(data.errors)
+            ? data.errors.join(" ")
+            : "";
 
-  throw new Error(
-    validationErrors ||
-    data.message ||
-    data.error ||
-    "Approval failed"
-  );
+        throw new Error(
+          validationErrors ||
+          data.message ||
+          data.error ||
+          "Approval failed"
+        );
 
-}
-
+      }
 
       showStatus(
         "✓ Metadata approved successfully.",
         "success"
       );
-
 
       approveButton.textContent =
         "✓ Approved";
@@ -272,18 +276,15 @@ approveButton.addEventListener(
         aemSyncResult.style.display =
           "block";
 
-
         aemSyncStatus.textContent =
           data.aemResult.mode === "mock"
             ? "Simulated successfully (Mock Mode)"
             : "Synced successfully";
 
-
         aemAssetPath.textContent =
           data.aemResult.assetPath || "--";
 
       }
-
 
     } catch (error) {
 
@@ -293,10 +294,8 @@ approveButton.addEventListener(
         "error"
       );
 
-
       approveButton.textContent =
         "✓ Approve Metadata";
-
 
     } finally {
 
@@ -320,35 +319,29 @@ resetButton.addEventListener(
     imageInput.value =
       "";
 
-
     preview.src =
       "";
 
     preview.style.display =
       "none";
 
-
     fileName.textContent =
       "Select an image to begin";
 
-
     clearMetadata();
-
 
     metadataSection.style.display =
       "none";
 
-
     emptyState.style.display =
       "block";
-
 
     approveButton.textContent =
       "✓ Approve Metadata";
 
-
     resetAemSync();
 
+    resetConfidenceWarning();
 
     clearStatus();
 
@@ -367,18 +360,15 @@ function populateMetadata(metadata) {
     .value =
     metadata.title || "";
 
-
   document
     .getElementById("description")
     .value =
     metadata.description || "";
 
-
   document
     .getElementById("altText")
     .value =
     metadata.altText || "";
-
 
   document
     .getElementById("tags")
@@ -387,16 +377,13 @@ function populateMetadata(metadata) {
       ? metadata.tags.join(", ")
       : metadata.tags || "";
 
-
   document
     .getElementById("classification")
     .value =
     metadata.classification || "";
 
-
   const confidence =
     Number(metadata.confidence);
-
 
   document
     .getElementById("confidence")
@@ -419,13 +406,11 @@ function getMetadataFromForm() {
     fileName:
       imageInput.files[0]?.name || "",
 
-
     title:
       document
         .getElementById("title")
         .value
         .trim(),
-
 
     description:
       document
@@ -433,13 +418,11 @@ function getMetadataFromForm() {
         .value
         .trim(),
 
-
     altText:
       document
         .getElementById("altText")
         .value
         .trim(),
-
 
     tags:
       document
@@ -451,13 +434,11 @@ function getMetadataFromForm() {
         )
         .filter(Boolean),
 
-
     classification:
       document
         .getElementById("classification")
         .value
         .trim(),
-
 
     confidence:
       document
@@ -479,30 +460,99 @@ function clearMetadata() {
     .getElementById("title")
     .value = "";
 
-
   document
     .getElementById("description")
     .value = "";
-
 
   document
     .getElementById("altText")
     .value = "";
 
-
   document
     .getElementById("tags")
     .value = "";
-
 
   document
     .getElementById("classification")
     .value = "";
 
-
   document
     .getElementById("confidence")
     .textContent = "--";
+
+}
+
+
+/*
+ * UPDATE CONFIDENCE WARNING
+ */
+
+function updateConfidenceWarning(
+  evaluation
+) {
+
+  if (
+    !confidenceWarning ||
+    !confidenceWarningText
+  ) {
+    return;
+  }
+
+  if (!evaluation) {
+
+    resetConfidenceWarning();
+
+    return;
+  }
+
+  if (evaluation.lowConfidence) {
+
+    const score =
+      Math.round(
+        evaluation.score * 100
+      );
+
+    const threshold =
+      Math.round(
+        evaluation.threshold * 100
+      );
+
+    confidenceWarning.style.display =
+      "block";
+
+    confidenceWarningText.textContent =
+      `AI confidence is ${score}%. ` +
+      `The review threshold is ${threshold}%. ` +
+      `Please review the generated metadata carefully before approval.`;
+
+  } else {
+
+    resetConfidenceWarning();
+
+  }
+
+}
+
+
+/*
+ * RESET CONFIDENCE WARNING
+ */
+
+function resetConfidenceWarning() {
+
+  if (!confidenceWarning) {
+    return;
+  }
+
+  confidenceWarning.style.display =
+    "none";
+
+  if (confidenceWarningText) {
+
+    confidenceWarningText.textContent =
+      "Review these AI suggestions carefully before approval.";
+
+  }
 
 }
 
@@ -517,17 +567,22 @@ function resetAemSync() {
     return;
   }
 
-
   aemSyncResult.style.display =
     "none";
 
+  if (aemSyncStatus) {
 
-  aemSyncStatus.textContent =
-    "Waiting for approval";
+    aemSyncStatus.textContent =
+      "Waiting for approval";
 
+  }
 
-  aemAssetPath.textContent =
-    "--";
+  if (aemAssetPath) {
+
+    aemAssetPath.textContent =
+      "--";
+
+  }
 
 }
 
@@ -544,7 +599,6 @@ function showStatus(
   status.textContent =
     message;
 
-
   status.className =
     "status-" + type;
 
@@ -559,7 +613,6 @@ function clearStatus() {
 
   status.textContent =
     "";
-
 
   status.className =
     "";

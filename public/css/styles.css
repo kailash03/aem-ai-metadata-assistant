@@ -502,6 +502,29 @@ footer {
   overflow-wrap: anywhere;
 }
 
+/* LOW CONFIDENCE WARNING */
+
+.confidence-warning {
+  display: none;
+
+  margin-bottom: 20px;
+  padding: 14px 16px;
+
+  background: #fff8e1;
+  border: 1px solid #f0d98c;
+  border-radius: 8px;
+
+  color: #7a5b00;
+}
+
+.confidence-warning strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.confidence-warning span {
+  font-size: 13px;
+}
 
 /* MOBILE */
 
