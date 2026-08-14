@@ -1,254 +1,326 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AEM AI Metadata Assistant</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>AEM AI Metadata Assistant</title>
-
-  <link rel="stylesheet" href="/css/styles.css">
-</head>
-
-<body>
-
-  <header class="header">
-    <div>
-      <h1>AEM AI Metadata Assistant</h1>
-      <p>AI-assisted DAM metadata with human review and approval</p>
-    </div>
-
-    <div class="badge">
-      AI + AEM
-    </div>
-  </header>
-
-  <main class="page">
-
-    <div class="workflow">
-      <span class="workflow-step">📤 Asset Upload</span>
-      <span class="arrow">→</span>
-
-      <span class="workflow-step">✨ AI Analysis</span>
-      <span class="arrow">→</span>
-
-      <span class="workflow-step">👤 Human Review</span>
-      <span class="arrow">→</span>
-
-      <span class="workflow-step">✓ Approval</span>
-    </div>
-
-    <div class="main-card">
-
-      <!-- ASSET PANEL -->
-
-      <section class="asset-panel">
-
-        <div class="section-label">
-          ASSET
+  <body>
+    <!-- HEADER -->
+    <header class="header">
+      <div class="brand">
+        <div class="brand-icon">AI</div>
+        <div>
+          <h1>AEM AI Metadata Assistant</h1>
+          <p>Intelligent DAM metadata generation, review and approval</p>
         </div>
-
-        <div class="upload-box">
-
-          <input
-            type="file"
-            id="imageInput"
-            accept="image/*"
-          >
-
-          <img
-            id="preview"
-            alt="Asset preview"
-          >
-
-          <div
-            class="file-name"
-            id="fileName"
-          >
-            Select an image to begin
-          </div>
-
-        </div>
-
-        <button id="analyzeButton">
-          ✨ Analyze with AI
-        </button>
-
-        <div id="status"></div>
-
-      </section>
-
-
-      <!-- METADATA PANEL -->
-
-      <section class="metadata-panel">
-
-        <div class="section-label">
-          METADATA
-        </div>
-
-        <!-- Empty State -->
-
-        <div
-          id="emptyState"
-          class="empty-state"
-        >
-
-          <div class="empty-icon">
-            ✨
-          </div>
-
-          <h3>
-            AI Metadata Suggestions
-          </h3>
-
-          <p>
-            Upload an asset and run AI analysis
-            to generate metadata suggestions.
-          </p>
-
-        </div>
-
-
-        <!-- Metadata Form -->
-
-        <div
-          id="metadataSection"
-          class="metadata-section"
-        >
-
-          <h2>
-            AI Metadata Suggestions
-          </h2>
-
-          <div class="helper">
-            Review and edit the AI-generated values before approval.
-          </div>
-
-          <div id="confidenceWarning" class="confidence-warning">
-            <strong>⚠ Low AI Confidence</strong>
-          <span id="confidenceWarningText">
-            Review these AI suggestions carefully before approval.
-          </span>
-          </div>
-
-          <label for="title">
-            Title
-          </label>
-
-          <input
-            id="title"
-            type="text"
-          >
-
-
-          <label for="description">
-            Description
-          </label>
-
-          <textarea
-            id="description"
-          ></textarea>
-
-
-          <label for="altText">
-            Alt Text
-          </label>
-
-          <textarea
-            id="altText"
-          ></textarea>
-
-
-          <label for="tags">
-            Tags
-          </label>
-
-          <input
-            id="tags"
-            type="text"
-          >
-
-
-          <div class="row">
-
-            <div>
-
-              <label for="classification">
-                Classification
-              </label>
-
-              <input
-                id="classification"
-                type="text"
-              >
-
-            </div>
-
-            <div>
-
-              <label>
-                AI Confidence
-              </label>
-
-              <div
-                class="confidence-box"
-                id="confidence"
-              >
-                --
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <div class="actions">
-
-            <button id="resetButton">
-              ↻ Reset
-            </button>
-
-            <button id="approveButton">
-              ✓ Approve Metadata
-            </button>
-
-          </div>
-<div id="aemSyncResult" class="aem-sync-result">
-
-  <div class="aem-sync-header">
-    <span class="aem-sync-icon">✓</span>
-
-    <div>
-      <strong>AEM Sync</strong>
-      <div id="aemSyncStatus">
-        Waiting for approval
       </div>
-    </div>
-  </div>
-
-  <div class="aem-path">
-    <span>Asset Path</span>
-    <code id="aemAssetPath">--</code>
-  </div>
-
-</div>
+      <div class="header-badges">
+        <div class="mode-badge">
+          <span class="mode-dot"></span>
+          AEM Mock Mode
         </div>
+        <div class="badge">AI + AEM</div>
+      </div>
+    </header>
 
+
+    <main class="page">
+      <!-- WORKFLOW -->
+      <section class="workflow-card">
+        <div class="workflow-title">Metadata Workflow</div>
+        <div class="workflow">
+          <div class="workflow-step">
+            <span class="workflow-icon">01</span>
+            <div>
+              <strong>Asset Upload</strong>
+              <small>Select DAM assets</small>
+            </div>
+          </div>
+          <span class="arrow">→</span>
+          <div class="workflow-step">
+            <span class="workflow-icon">02</span>
+            <div>
+              <strong>AI Analysis</strong>
+              <small>Generate metadata</small>
+            </div>
+          </div>
+          <span class="arrow">→</span>
+          <div class="workflow-step">
+            <span class="workflow-icon">03</span>
+            <div>
+              <strong>Human Review</strong>
+              <small>Validate & edit</small>
+            </div>
+          </div>
+          <span class="arrow">→</span>
+          <div class="workflow-step">
+            <span class="workflow-icon">04</span>
+            <div>
+              <strong>AEM Approval</strong>
+              <small>Prepare DAM sync</small>
+            </div>
+          </div>
+        </div>
       </section>
 
-    </div>
 
-  </main>
+      <!-- MAIN WORKSPACE -->
+      <div class="workspace">
+        <!-- LEFT — ASSET WORKSPACE -->
+        <section class="asset-panel">
+          <div class="panel-header">
+            <div>
+              <div class="section-label">ASSET WORKSPACE</div>
+              <h2>Assets</h2>
+            </div>
+            <div class="panel-status">AI Ready</div>
+          </div>
+
+          <!-- Upload -->
+          <div class="upload-box">
+            <div class="upload-heading">
+              <span class="upload-icon">↑</span>
+              <div>
+                <strong>Add DAM Assets</strong>
+                <small>Select one or multiple images</small>
+              </div>
+            </div>
+            <input
+              type="file"
+              id="imageInput"
+              accept="image/*"
+              multiple
+            />
+          </div>
+
+          <!-- Current Preview -->
+          <div class="preview-card">
+            <div class="preview-label">CURRENT ASSET</div>
+            <div class="preview-container">
+              <img id="preview" alt="Asset preview" />
+              <div class="preview-placeholder">
+                <span>◇</span>
+                <small>Asset preview</small>
+              </div>
+            </div>
+            <div class="file-name" id="fileName">
+              Select an image to begin
+            </div>
+          </div>
+
+          <!-- Bulk Asset Queue -->
+          <div id="assetQueue" class="asset-queue">
+            <div class="asset-queue-header">
+              <div>
+                <span class="queue-label">REVIEW QUEUE</span>
+                <strong>Selected Assets</strong>
+              </div>
+              <span id="assetCount" class="asset-count">0 assets</span>
+            </div>
+            <div id="assetQueueList" class="asset-queue-list"></div>
+            <div id="batchSummary" class="batch-summary">
+              <div class="summary-item">
+                <strong id="summaryTotal">0</strong>
+                <span>Assets</span>
+              </div>
+              <div class="summary-item">
+                <strong id="summaryAnalyzed">0</strong>
+                <span>Analyzed</span>
+              </div>
+              <div class="summary-item">
+                <strong id="summaryApproved">0</strong>
+                <span>Approved</span>
+              </div>
+              <div class="summary-item">
+                <strong id="summaryReview">0</strong>
+                <span>To Review</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Analyze -->
+          <button id="analyzeButton" class="analyze-button">
+            <span>✦</span>
+            Analyze with AI
+          </button>
+          <div id="status" class="status-container"></div>
+        </section>
 
 
-  <footer>
-    © 2026 Kailash Ramagiri • AEM AI Metadata Assistant • All Rights Reserved
-  </footer>
+        <!-- RIGHT — METADATA REVIEW -->
+        <section class="metadata-panel">
+          <div class="panel-header">
+            <div>
+              <div class="section-label">HUMAN REVIEW</div>
+              <h2>Metadata Review</h2>
+            </div>
+            <div class="review-badge">Human-in-the-Loop</div>
+          </div>
+
+          <!-- Empty State -->
+          <div id="emptyState" class="empty-state">
+            <div class="empty-visual">
+              <div class="empty-glow"></div>
+              <div class="empty-icon">✦</div>
+            </div>
+            <h3>Ready for AI Analysis</h3>
+            <p>
+              Upload one or more assets and run AI analysis. After analysis,
+              select an asset from the review queue to inspect and edit its
+              metadata.
+            </p>
+            <div class="empty-features">
+              <span>✓ AI metadata</span>
+              <span>✓ Accessibility</span>
+              <span>✓ Human approval</span>
+            </div>
+          </div>
+
+          <!-- METADATA FORM -->
+          <div id="metadataSection" class="metadata-section">
+            <!-- Metadata Heading -->
+            <div class="metadata-heading">
+              <div>
+                <span class="metadata-eyebrow">AI GENERATED</span>
+                <h2>Metadata Suggestions</h2>
+                <p class="helper">
+                  Review and edit the generated values before approving this
+                  asset.
+                </p>
+              </div>
+              <div class="ai-chip">✦ AI Assisted</div>
+            </div>
+
+            <!-- Confidence Warning -->
+            <div id="confidenceWarning" class="confidence-warning">
+              <div class="warning-icon">!</div>
+              <div>
+                <strong>Low AI Confidence</strong>
+                <span id="confidenceWarningText">
+                  Review these AI suggestions carefully before approval.
+                </span>
+              </div>
+            </div>
+
+            <!-- Title -->
+            <div class="field-group">
+              <div class="field-heading">
+                <label for="title">Title</label>
+                <span class="required">Required</span>
+              </div>
+              <input
+                id="title"
+                type="text"
+                placeholder="Asset title"
+              />
+            </div>
+
+            <!-- Description -->
+            <div class="field-group">
+              <div class="field-heading">
+                <label for="description">Description</label>
+              </div>
+              <textarea
+                id="description"
+                placeholder="Describe the asset"
+              ></textarea>
+            </div>
+
+            <!-- Alt Text -->
+            <div class="field-group">
+              <div class="field-heading">
+                <label for="altText">Alt Text</label>
+                <span class="accessibility-badge">Accessibility</span>
+              </div>
+              <textarea
+                id="altText"
+                placeholder="Accessible image description"
+              ></textarea>
+            </div>
+
+            <!-- Tags -->
+            <div class="field-group">
+              <div class="field-heading">
+                <label for="tags">Tags</label>
+                <span class="field-hint">Comma separated</span>
+              </div>
+              <input
+                id="tags"
+                type="text"
+                placeholder="dam, product, campaign"
+              />
+            </div>
+
+            <!-- Classification / Confidence -->
+            <div class="metadata-grid">
+              <div class="field-group">
+                <label for="classification">Classification</label>
+                <input id="classification" type="text" />
+              </div>
+              <div class="field-group">
+                <label>AI Confidence</label>
+                <div class="confidence-card">
+                  <div class="confidence-box" id="confidence">--</div>
+                  <div>
+                    <strong>Confidence Score</strong>
+                    <small>AI-generated estimate</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Guardrail -->
+            <div class="guardrail">
+              <span class="guardrail-icon">✓</span>
+              <div>
+                <strong>Human Review Required</strong>
+                <p>
+                  AI suggestions are never written directly to AEM. Metadata
+                  must pass validation and human approval first.
+                </p>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="actions">
+              <button id="resetButton" class="reset-button">↻ Reset</button>
+              <button id="approveButton" class="approve-button">
+                <span>✓</span>
+                Approve Metadata
+              </button>
+            </div>
+
+            <!-- AEM SYNC -->
+            <div id="aemSyncResult" class="aem-sync-result">
+              <div class="aem-sync-header">
+                <span class="aem-sync-icon">✓</span>
+                <div>
+                  <span class="sync-label">AEM DELIVERY</span>
+                  <strong>AEM Sync</strong>
+                  <div id="aemSyncStatus">Waiting for approval</div>
+                </div>
+              </div>
+              <div class="aem-path">
+                <span>DAM Asset Path</span>
+                <code id="aemAssetPath">--</code>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
 
 
-  <script src="/js/app.js"></script>
+    <!-- FOOTER -->
+    <footer>
+      <span>© 2026 Kailash Ramagiri</span>
+      <span>AEM AI Metadata Assistant</span>
+      <span>Human-reviewed AI for Digital Asset Management</span>
+    </footer>
 
-</body>
-
+    <script src="/js/app.js"></script>
+  </body>
 </html>
